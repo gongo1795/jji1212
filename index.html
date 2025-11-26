@@ -1,24 +1,491 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>간단한 투두 리스트</title>
-    <link rel="stylesheet" href="styles.css"> 
+  <meta charset="UTF-8">
+  <title>진로 로드맵 & 자기이해 - 윤영옥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      line-height: 1.6;
+      background-color: #f5f7fb;
+      color: #222;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 24px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title span.icon {
+      font-size: 1.1rem;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 18px 0;
+    }
+
+    /* 프로필 테이블 */
+    .profile-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .profile-table th,
+    .profile-table td {
+      border: 1px solid #e5e7eb;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .profile-table th {
+      width: 120px;
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    .profile-table td.label {
+      width: 90px;
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    /* 로드맵 계획 – 나의 목표 */
+    .goal-meta {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .goal-meta span.highlight {
+      font-weight: 600;
+      color: #4f46e5;
+    }
+
+    .goal-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      table-layout: fixed;
+    }
+
+    .goal-table th,
+    .goal-table td {
+      border: 1px solid #e5e7eb;
+      padding: 8px 10px;
+      vertical-align: top;
+    }
+
+    .goal-table thead th {
+      background: #f3f4f6;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .goal-table tbody th {
+      width: 90px;
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    .goal-table td {
+      white-space: pre-line;
+    }
+
+    /* 가치관 */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      font-size: 0.8rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+
+    .pill--negative {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    /* SWOT */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .swot-box {
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .swot-label {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .swot-label span {
+      font-weight: 400;
+      margin-left: 4px;
+      color: #6b7280;
+    }
+
+    .swot-s { border-top: 3px solid #22c55e; }
+    .swot-w { border-top: 3px solid #f97316; }
+    .swot-o { border-top: 3px solid #0ea5e9; }
+    .swot-t { border-top: 3px solid #ef4444; }
+
+    .swot-text {
+      margin-top: 6px;
+      white-space: pre-line;
+    }
+
+    /* 자기이해 본문 */
+    .paragraph {
+      font-size: 0.95rem;
+      color: #374151;
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    .highlight-note {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        margin: 12px;
+        padding: 18px;
+        border-radius: 12px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="todo-list-container">
-        <h2>나의 할 일 목록</h2>
-        
-        <div id="todo-input-area"> 
-            <input type="text" id="todo-input" placeholder="할 일을 입력하세요">
-            <button id="add-button">추가</button>
-        </div>
-        
-        <ul id="todo-list">
-            </ul>
-    </div>
+  <div class="page">
+    <header>
+      <h1>진로 로드맵 & 자기이해</h1>
+      <p class="subtitle">미래아우름대학 자유전공학부 · 202580053 윤영옥</p>
+      <div class="tag-row">
+        <span class="tag">기업진출</span>
+        <span class="tag">전기·전자</span>
+        <span class="tag">목표 직무: 전기</span>
+        <span class="tag">자기이해 · SWOT · 직업가치관 · 로드맵계획</span>
+      </div>
+    </header>
 
-    <script src="script.js"></script>
+    <!-- 기본 프로필 -->
+    <section>
+      <div class="section-title">
+        <span class="icon">👤</span>
+        <span>기본 프로필</span>
+      </div>
+      <table class="profile-table">
+        <tr>
+          <th>성명</th>
+          <td>윤영옥</td>
+          <td class="label">학번</td>
+          <td>202580053</td>
+        </tr>
+        <tr>
+          <th>소속대학</th>
+          <td>미래아우름대학</td>
+          <td class="label">학과</td>
+          <td>자유전공학부</td>
+        </tr>
+        <tr>
+          <th>진로방향</th>
+          <td>기업진출</td>
+          <td class="label">직종</td>
+          <td>전기·전자 (목표직무: 전기)</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 로드맵 계획 : 나의 목표 -->
+    <section>
+      <div class="section-title">
+        <span class="icon">🗺️</span>
+        <span>로드맵 계획 · 나의 목표</span>
+      </div>
+      <div class="goal-meta">
+        <span>나의 목표 달성 <span class="highlight">(5)</span> · 미달성 <span class="highlight">(34)</span></span>
+      </div>
+      <table class="goal-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>1학년</th>
+            <th>2학년</th>
+            <th>3학년</th>
+            <th>4학년</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>학년별 목표</th>
+            <td>AISW계열 공통 수강 및 언어 기초 학습</td>
+            <td>계열공통수강 및 언어 심화 학습</td>
+            <td>프로젝트 참여 위주로 실무 경험 높이고 포트폴리오 확장하기</td>
+            <td>자격증 및 어학 공부, 취업 준비</td>
+          </tr>
+          <tr>
+            <th>교과</th>
+            <td>
+c언어
+문제해결프로그래밍
+웹프로그래밍
+AISW수학
+AISW개론
+            </td>
+            <td>
+운영체제
+데이터통신
+데이터베이스
+논리회로
+자료구조
+자바프로그래밍
+공학설계입문
+XR콘텐츠 입문
+XR콘텐츠 응용
+고급프로그래밍
+            </td>
+            <td>
+컴퓨터그래픽스
+영상처리
+UI/UX프로그래밍
+모바일프로그래밍
+게임프로그래밍
+게임프로그래밍 응용
+인공지능
+인간컴퓨터상호작용
+캡스톤디자인
+AISW캡스톤디자인
+            </td>
+            <td>
+AISW기술창업
+IoT 융합서비스 계획
+데이터 수집 및 시각화
+컴퓨터비전
+            </td>
+          </tr>
+          <tr>
+            <th>어학</th>
+            <td>등록</td>
+            <td>등록</td>
+            <td>TOEIC</td>
+            <td>TOEFL</td>
+          </tr>
+          <tr>
+            <th>직무경험</th>
+            <td>등록</td>
+            <td>등록</td>
+            <td>IPP일병행학습 준비</td>
+            <td>IPP일병행학습</td>
+          </tr>
+          <tr>
+            <th>수상</th>
+            <td>등록</td>
+            <td>해커톤 참여</td>
+            <td>캡스톤디자인 수상</td>
+            <td>캡스톤디자인 수상</td>
+          </tr>
+          <tr>
+            <th>기타</th>
+            <td>등록</td>
+            <td>컴퓨터활용능력1급</td>
+            <td>정보처리기사</td>
+            <td>빅데이터분석기사</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 직업 가치관 -->
+    <section>
+      <div class="section-title">
+        <span class="icon">💎</span>
+        <span>나의 직업 가치관</span>
+      </div>
+      <div class="values-grid">
+        <div class="card">
+          <h3>중요한 가치</h3>
+          <div class="pill-list">
+            <span class="pill">경제적 안정</span>
+            <span class="pill">삶의 균형(워라밸)</span>
+            <span class="pill">가족</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>중요하지 않은 가치</h3>
+          <div class="pill-list">
+            <span class="pill pill--negative">과한 권위·통제력</span>
+            <span class="pill pill--negative">화려함·외형적인 이미지</span>
+            <span class="pill pill--negative">경쟁 중심 환경</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SWOT -->
+    <section>
+      <div class="section-title">
+        <span class="icon">📊</span>
+        <span>MY SWOT 분석</span>
+      </div>
+      <div class="swot-grid">
+        <div class="swot-box swot-s">
+          <div class="swot-label">S <span>(Strength, 강점)</span></div>
+          <div class="swot-text">
+가장 큰 강점은 일을 할 때 차분하게 접근하고, 한 번 시작하면 끝까지 책임감 있게 마무리하려는 태도라고 생각합니다. 어떤 과제를 하든 중간에 대충 넘기지 않고, 스스로 만족할 때까지 계속 다듬는 습관이 있습니다. 이 과정에서 시간이 조금 더 걸리더라도 결과물을 깔끔하게 만들고 싶은 마음이 자연스럽게 따라옵니다.
+
+또한 새로운 분야를 접했을 때 겁먹기보다는 먼저 시도해보려는 편입니다. 잘 모르더라도 일단 부딪혀 보고, 이해가 안 되면 계속 질문하면서 해결해 나가는 편이라 배우는 과정에서 꾸준함이 있다는 말을 자주 듣습니다. 여러 경험을 쌓는 것을 부담스럽게 여기지 않고 즐기는 편이라, 다양한 시도로 인해 시야가 넓어진 것도 제 강점이라고 생각합니다.
+          </div>
+        </div>
+
+        <div class="swot-box swot-w">
+          <div class="swot-label">W <span>(Weakness, 약점)</span></div>
+          <div class="swot-text">
+저의 약점은, 일을 할 때 너무 완벽하게 하고 싶어 하는 편이라 시간이 오래 걸릴 때가 있다는 점입니다. 작은 부분 하나에도 신경을 쓰다 보니 작업 범위가 넓어지거나 결정해야 할 순간에 오래 고민하는 일이 생기곤 합니다. 또 스스로 기준을 높게 잡는 편이라, 가끔은 필요 이상으로 부담을 느끼기도 합니다. 이런 부분은 앞으로 조금 더 속도를 조절하고, 부담을 덜어내면서 균형 있게 개선해 나가고 싶습니다.
+          </div>
+        </div>
+
+        <div class="swot-box swot-o">
+          <div class="swot-label">O <span>(Opportunity, 기회)</span></div>
+          <div class="swot-text">
+저는 중·고등학교 시절부터 다양한 활동을 경험하면서 스스로 성장할 기회를 여러 번 얻었습니다. 특히 여러 분야에 관심이 많아 이것저것 시도해 본 경험이 제게는 큰 기회였습니다. 미용을 집중적으로 배웠던 시기에는 ‘어떤 일을 꾸준히 해보는 힘’을 얻었고, 대학에 와서는 새로운 전공을 탐색할 수 있는 자유전공학부의 환경 덕분에 진로를 다시 생각해 볼 기회를 가질 수 있었습니다. 또한, 주변에서 조언을 아끼지 않는 선생님들과 친구들을 만난 것도 중요한 기회였습니다. 이런 경험들이 지금의 저를 만드는 데 큰 영향을 주었다고 느낍니다.
+          </div>
+        </div>
+
+        <div class="swot-box swot-t">
+          <div class="swot-label">T <span>(Threat, 위협)</span></div>
+          <div class="swot-text">
+반대로, 제가 지나온 과정에서 힘들었던 순간도 있었습니다. 꿈이 자주 바뀌고 방향을 여러 번 수정하면서 스스로 흔들렸던 시기도 있었고, 뭘 선택해야 할지 몰라 불안했던 순간들도 있었습니다. 어떤 분야에 오래 집중하기보다는 이것저것 해보는 편이어서, 그 때문에 “내가 뭘 정말 잘하는 걸까?” 하고 고민이 깊어졌던 적도 있습니다. 또, 중요한 결정을 앞두고 스스로 확신을 가지지 못해 한동안 멈춰 있었던 경험도 위기라고 생각합니다. 이런 순간들은 힘들었지만, 결과적으로는 저를 더 차분하게 만들고 스스로를 다시 바라보게 해 준 계기가 되었습니다.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 내가 이해하는 나 -->
+    <section>
+      <div class="section-title">
+        <span class="icon">🧩</span>
+        <span>내가 이해하는 나</span>
+      </div>
+      <p class="paragraph">
+        저는 예전부터 한 가지에만 머무르기보다는 여러 분야에 관심이 많은 편이었습니다. 그래서 무엇이 저에게 정말 맞는 길인지 찾기까지 시간이 조금 걸렸지만, 그 과정에서 스스로를 이해하는 폭이 넓어졌습니다. 새로운 걸 배우는 데 거부감이 크지 않고, 모르면 직접 해보면서 익히는 것을 좋아하는 성향이라 자연스럽게 다양한 경험을 쌓을 수 있었습니다.
+      </p>
+      <p class="paragraph">
+        이런 경험들이 쌓이다 보니 제 직업적 흥미도 한 방향으로 고정되기보다는 “사람에게 도움이 되는 일”과 “기술을 활용해 문제를 해결하는 일”에 마음이 끌린다는 것을 깨달았습니다. 단순히 기술만 다루는 것보다, 누군가가 필요로 하는 기능을 만들거나 불편함을 줄이는 데 기여하는 일을 좋아하는 편입니다. 그래서 AI·SW 분야와 라이프케어 분야에 흥미를 가지게 되었고, 지금 공부하고 있는 내용들도 그런 방향과 자연스럽게 연결되어 있습니다.
+      </p>
+      <p class="paragraph">
+        성격적으로는 조용하고 차분한 편이며, 일을 시작하면 한 번에 끝내기보다는 천천히 다듬어 가는 걸 선호합니다. 겉으로는 느긋해 보일 수 있지만, 마음속으로는 결과물의 완성도를 중요하게 생각하는 편이라 스스로 기준이 은근히 높은 편입니다. 어떤 일을 맡으면 책임감을 가지고 끝까지 해내려는 자세는 제 장점이라고 생각합니다. 대신 이런 성향 때문에 고민이 길어지거나 부담을 스스로에게 너무 많이 주는 경우도 있어서, 앞으로는 속도와 균형을 더 잘 맞추고 싶습니다.
+      </p>
+      <p class="paragraph">
+        제가 자라온 환경도 지금의 저에게 영향을 많이 주었습니다. 중·고등학교 때는 미용 등 다른 분야에 푹 빠져 지낸 적도 있었고, 대학에서는 자유전공학부로 들어오면서 다양한 선택지를 접해볼 수 있었습니다. 그 과정에서 부모님은 저의 모든 선택을 존중하고 그에 따른 책임을 온전히 누릴 수 있게 해 주셨습니다. 이런 환경은 저에게 한 가지 길만 고집하기보다, 여러 방향을 차분히 탐색해 볼 수 있는 여유를 주었습니다. 덕분에 새로운 분야에 도전할 때 부담이 적었고, 제 선택에 대해 스스로 책임지며 경험을 쌓을 수 있었습니다. 물론 그 과정에서 흔들리거나 고민이 깊어질 때도 있었지만, 지금 돌아보면 그런 시간들 덕분에 제 진로를 더 진지하게 고민할 수 있었고, 무엇이 나에게 맞는지 스스로 판단하는 힘도 조금씩 길러진 것 같습니다.
+      </p>
+      <p class="paragraph">
+        이렇게 돌아보면, 저는 아직 확실한 하나의 모습을 완성한 사람은 아니지만, 대신 여러 경험을 통해 천천히 나를 알아가는 사람에 가깝다고 느낍니다. 좋아하는 것이나 잘하는 것은 시간이 지나면서 계속 변할 수도 있지만, 그 과정 속에서 제가 어떤 사람인지 조금씩 더 알아가는 것이 저에게는 중요합니다. 앞으로도 지금처럼 경험을 쌓고 스스로를 이해해 가며, 제가 잘할 수 있는 길을 찾아가고 싶습니다.
+      </p>
+      <p class="highlight-note">
+        * 위 내용은 자기이해를 기반으로 한 진로 로드맵 실행 계획의 기초 자료입니다.
+      </p>
+    </section>
+  </div>
 </body>
 </html>
